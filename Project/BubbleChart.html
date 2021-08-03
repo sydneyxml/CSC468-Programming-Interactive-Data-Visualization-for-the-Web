@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+		<title>Bubble Chart - DataVizWhiz</title>
+		<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+
+		<style type="text/css">
+			/* No style rules here yet */		
+		</style>
+</head>
+<body>
+    <h2>Bubble Chart - Average Net Income by Different Industries in NYC</h2>
+    <h3>Unit of Measurement: k per $</h3>
+	<script type="text/javascript">
+
+       dataset = {
+            "children": [{"Name":"Real-Estate","Count":174.53},
+                {"Name":"Education","Count":119.28},
+                {"Name":"Manufacturing","Count":116.53},
+                {"Name":"Biotech-Pharmaceuticals","Count":116.28},  
+                {"Name":"Travel-Tourism","Count":115.53},     
+                {"Name":"Health-Care","Count":113.53},  
+                {"Name":"Insurance","Count":108.39},        
+                {"Name":"Food-Services","Count":106.87},
+                {"Name":"Information-Technology","Count":105.77},
+                {"Name":"Consumer-Services","Count":103.63},
+                {"Name":"Business-Services","Count":101.45},  
+                {"Name":"Agriculture-Forestry","Count":101.03},
+                {"Name":"Media","Count":98.10},
+                {"Name":"Retail","Count":96.7},
+                {"Name":"Government","Count":96.43},
+                {"Name":"Non-Profit","Count":96.33},
+                {"Name":"Finance","Count":94.48},
+                {"Name":"Accounting-Legal","Count":81.03},
+                {"Name":"Arts-Entertainment","Count":81.03},
+                {"Name":"Oil-Gas-Energy-Utilities","Count":68.53}]
+        };
+
+        var diameter = 600;
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        var bubble = d3.pack(dataset)
+            .size([diameter, diameter])
+            .padding(1.5);
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+            .attr("class", "bubble");
+
+        var nodes = d3.hierarchy(dataset)
+            .sum(function(d) { return d.Count; });
+
+        var node = svg.selectAll(".node")
+            .data(bubble(nodes).descendants())
+            .enter()
+            .filter(function(d){
+                return  !d.children
+            })
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        node.append("title")
+            .text(function(d) {
+                return d.Name + ": " + d.Count;
+            });
+
+        node.append("circle")
+            .attr("r", function(d) {
+                return d.r;
+            })
+            .style("fill", function(d,i) {
+                return color(i);
+            });
+
+        node.append("text")
+            .attr("dy", ".2em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return d.data.Name.substring(0, d.r / 3);
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", function(d){
+                return d.r/5;
+            })
+            .attr("fill", "white");
+
+        node.append("text")
+            .attr("dy", "1.3em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return d.data.Count;
+            })
+            .attr("font-family",  "Gill Sans", "Gill Sans MT")
+            .attr("font-size", function(d){
+                return d.r/5;
+            })
+            .attr("fill", "white");
+
+        d3.select(self.frameElement)
+            .style("height", diameter + "px");
+
+	</script>
+</body>
+</html>
